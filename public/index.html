@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>
+            Shader Circle Inversion
+        </title>
+        <meta charset="utf-8">
+        <script type="x-shader/x-vertex" id="vertexshader">
+
+		    // Switch on high precision floats.
+		    #ifdef GL_ES
+		        precision highp float;
+		    #endif
+
+            // Just perform normal view/model/projection transformation to screen.
+		    void main()
+		    {
+			    gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0);
+		    }
+	    </script>
+        <script type="x-shader/x-fragment" id="SpiralOfMadnessFragmentShader">
+
+		    // Switch on medium precision floats.
+            #ifdef GL_ES
+            precision mediump float;
+            #endif
+
+            // Define two critical uniforms set from the JavaScript proper.
+            uniform float time;
+            uniform vec2 resolution;
+
+            void main (void)
+            {
+                // Spiral of madness.
+                vec2 p = (gl_FragCoord.xy / resolution.xy) - 0.5;
+                float c = 0.0;
+                float a = atan(p.x,p.y)*10.;
+                float d = 8.0 / length(p);
+                c = (atan(cos(d-a+time)*20.)*9./pow((d),1.15));
+                gl_FragColor = vec4( vec3(2.0,1.5,8.0)*vec3( c*c, c*c-c, c*c*c/(1.0+c) ), 1.0 );
+            }
+        </script>
+        <script type="x-shader/x-fragment" id="CircleInversionFragmentShader">
+
+		    // Switch on medium precision floats.
+            #ifdef GL_ES
+                precision mediump float;
+            #endif
+
+            // Define two critical uniforms set from the JavaScript proper.
+            uniform float time;
+            uniform vec2 resolution;
+
+            // Define inversion sub-routine from the definition
+            // as specified by Apollonius of Perga circa ~200 BC.
+            vec2 CircleInversion(vec2 vPos,
+                vec2 vOrigin,
+                float fRadius)
+            {
+                // Define a ray through the center.
+	            vec2 vOP = vPos - vOrigin;
+
+                // Choose a point along the ray.
+	            vOrigin = vOrigin - vOP * fRadius * fRadius / dot(vOP, vOP);
+
+                // Reflect about the circumfrence.
+	            vOrigin.x += sin(vOrigin.x * 0.04);
+	            vOrigin.y -= cos(vOrigin.y* 0.01);
+
+                // Return.
+	            return vOrigin;
+            }
+
+            // Main method: normalizes fragment position,
+            // chooses a point on the circle, recursively
+            // iterates its inversion and ouputs to geometry.
+            void main(void)
+            {
+                // Get position in [-0.5..0.5].
+	            vec2 vPos = gl_FragCoord.xy / resolution.xy - 0.5;
+
+                // Adjust for aspect ratio.
+	            vPos.x *= resolution.x / resolution.y;
+
+                // Choose a time-based point on or around the circle as a re-entrant fractal seed.
+                // Notice the X parameter of the offset is sinusoidal, and the Y parameter is tangental.
+	            vec2 vScale = vec2(1.2);
+	            vec2 vOffset = vec2(sin(time * 0.0123),
+                    atan(time * 0.0567));
+
+                // Iterate the fractal.
+	            for (int i = 0; i < 64; i++)
+	            {
+                    // This abs call is critical to getting the kaleidoscope effect.
+		            vPos.x = abs(vPos.x);
+
+                    // Here, each iteration is bounced around the circle.
+		            vPos = vPos * vScale + vOffset;
+
+                    // Call down to the inversion routine--this evicerates the circle, exposing structure.
+                    // Notice that the circle inversion takes the output position as an input parameter.
+		            vPos = CircleInversion(vPos,
+                        vec2(0.5,
+                            0.5),             // The center.
+                        0.9);                 // Magic number.  Too small -> mush.  Too big -> mush.  Just right -> awesome!
+	            }
+
+                // Cycle the colors...slowly.
+	            float fR = sin(2.0 * 3.14159 * time * 0.005 + 3.14159 / 2.0);
+	            float fG = cos(2.0 * 3.14159 * time * 0.037);
+	            float fB = sin(2.0 * 3.14159 * time * 0.013);
+
+                // Normalize to get into full color space.
+	            vec3 vBaseColor = normalize(vec3(fR / 2.0 + 0.5,
+                    fG / 2.0 + 0.5,
+                    fB / 2.0 + 0.5));
+
+                // Position length is critical to differentiating the intensity of the shape.
+                float fPosLength = length(vPos);
+	            vec3 vColor = vBaseColor * fPosLength * fPosLength;
+
+                // Soften up the color slightly.
+	            vColor = 1.0 - exp2(-vColor);
+
+                // Finally, output with full opacity.
+	            gl_FragColor = vec4(vColor,
+                    1.0);
+            }
+        </script>
+        <script src="js/three.min.js"></script>
+        <script src="js/OrbitControls.js"></script>
+        <script>
+            // Ready method invoked when the document is fully loaded.
+            document.addEventListener("DOMContentLoaded", () => {
+
+                // Set up the scene, camera, and renderer as global variables.
+                var scene,
+                    camera,
+                    renderer,
+                    uniforms = null,                    // "Globalize" uniforms so it may be addressed and updated.
+                    startTime = new Date().getTime();   // Remember start time.
+
+                init();
+                animate();
+
+                // Sets up the scene.
+                function init() {
+
+                    // Create the scene and set the scene size.
+                    scene = new THREE.Scene();
+                    var WIDTH = window.innerWidth,
+                        HEIGHT = window.innerHeight;
+
+                    // Create a renderer and add it to the DOM.
+                    renderer = new THREE.WebGLRenderer({
+
+                        antialias: true
+                    });
+                    renderer.setSize(WIDTH,
+                        HEIGHT);
+                    document.body.appendChild(renderer.domElement);
+
+                    // Create a camera, zoom it out from the model a bit, and add it to the scene.
+                    camera = new THREE.PerspectiveCamera(45,
+                        WIDTH / HEIGHT,
+                        0.1,
+                        20000);
+                    camera.position.set(0, 2, 0);
+                    scene.add(camera);
+
+                    // Create an event listener that resizes the renderer with the browser window.
+                    window.addEventListener("resize",
+                        function () {
+
+                            // Re-extract size data.
+                            var WIDTH = window.innerWidth,
+                                HEIGHT = window.innerHeight;
+
+                            // Update the renderer and the camera.
+                            renderer.setSize(WIDTH,
+                                HEIGHT);
+                            camera.aspect = WIDTH / HEIGHT;
+                            camera.updateProjectionMatrix();
+
+                            // Update the uniform so next frame is drawn with correct aspect.
+                            uniforms.resolution.value = new THREE.Vector2(WIDTH,
+                                HEIGHT);
+                        });
+
+                    // Define simple plane geometry upon which to display the fractal.
+                    var geometry = new THREE.PlaneGeometry(3,
+                        1,
+                        1,
+                        1);
+
+                    // Define uniforms which are passed to the shaders each frame.
+                    uniforms = {
+
+                        time: {
+
+                            type: "f",
+                            value: (new Date().getTime() - startTime) / 1000
+                        },
+                        resolution: {
+
+                            type: "v2",
+                            value: new THREE.Vector2(WIDTH,
+                                HEIGHT)
+                        }
+                    };
+
+                    const shader = document.getElementById("vertexshader");
+                    const fragment = document.getElementById("CircleInversionFragmentShader");
+//                    const fragment = document.getElementById("SpiralOfMadnessFragmentShader");
+
+                    // Create the shader material.
+                    var shaderMaterial = new THREE.ShaderMaterial({
+
+                        uniforms: uniforms,
+                        vertexShader: shader.innerText,
+                        fragmentShader: fragment.innerText
+                    });
+
+                    // Allocate the mesh which is added to the scene.
+                    var mesh = new THREE.Mesh(geometry,
+                        shaderMaterial);
+                    mesh.rotateX(-Math.PI / 2);
+                    scene.add(mesh);
+
+                    // Add OrbitControls to pan around with the mouse.
+                    controls = new THREE.OrbitControls(camera,
+                        renderer.domElement);
+                }
+
+                // Renders the scene and updates the render as needed.
+                function animate() {
+
+                    // If uniforms allocated, update time.
+                    if (uniforms !== null) {
+
+                        uniforms.time.value = (new Date().getTime() - startTime) / 1000;
+                    }
+
+                    // Render the scene.
+                    renderer.render(scene,
+                        camera);
+                    controls.update();
+
+                    // Schedule next frame.
+                    setTimeout(requestAnimationFrame,
+                        10,
+                        animate);
+                }
+            });
+        </script>
+    </head>
+    <body style="margin: 0; overflow: hidden;">
+    </body>
+</html>
