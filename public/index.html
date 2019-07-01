@@ -63,15 +63,16 @@
                 vec2 vOrigin,
                 float fRadius)
             {
-                // Define a ray through the center.
+                // Define a ray from the origin to the specified position.
 	            vec2 vOP = vPos - vOrigin;
 
                 // Choose a point along the ray.
-	            vOrigin = vOrigin - vOP * fRadius * fRadius / dot(vOP, vOP);
+	            vOrigin = vOrigin - vOP * fRadius / dot(vOP, vOP);
+	            // Used to be: vOrigin = vOrigin - vOP * fRadius * fRadius / dot(vOP, vOP);?
 
                 // Reflect about the circumfrence.
-	            vOrigin.x += sin(vOrigin.x * 0.04);
-	            vOrigin.y -= cos(vOrigin.y* 0.01);
+	            vOrigin.x += sin(vOrigin.x * 0.009);
+	            vOrigin.y -= cos(vOrigin.y* 0.001);
 
                 // Return.
 	            return vOrigin;
@@ -112,9 +113,9 @@
 	            }
 
                 // Cycle the colors...slowly.
-	            float fR = sin(2.0 * 3.14159 * time * 0.005 + 3.14159 / 2.0);
-	            float fG = cos(2.0 * 3.14159 * time * 0.037);
-	            float fB = sin(2.0 * 3.14159 * time * 0.013);
+	            float fR = sin(2.0 * 3.14159 * time * 0.017);
+	            float fG = cos(2.0 * 3.14159 * time * 0.07);
+	            float fB = sin(2.0 * 3.14159 * time * 0.03);
 
                 // Normalize to get into full color space.
 	            vec3 vBaseColor = normalize(vec3(fR / 2.0 + 0.5,
@@ -167,7 +168,7 @@
                     document.body.appendChild(renderer.domElement);
 
                     // Create a camera, zoom it out from the model a bit, and add it to the scene.
-                    camera = new THREE.PerspectiveCamera(45,
+                    camera = new THREE.PerspectiveCamera(60,
                         WIDTH / HEIGHT,
                         0.1,
                         20000);
@@ -205,7 +206,7 @@
                         time: {
 
                             type: "f",
-                            value: (new Date().getTime() - startTime) / 1000
+                            value: (new Date().getTime() - startTime) / 500
                         },
                         resolution: {
 
@@ -245,7 +246,7 @@
                     // If uniforms allocated, update time.
                     if (uniforms !== null) {
 
-                        uniforms.time.value = (new Date().getTime() - startTime) / 10000;
+                        uniforms.time.value = (new Date().getTime() - startTime) / 500;
                     }
 
                     // Render the scene.
@@ -254,9 +255,7 @@
                     controls.update();
 
                     // Schedule next frame.
-                    setTimeout(requestAnimationFrame,
-                        10,
-                        animate);
+                    requestAnimationFrame(animate);
                 }
             });
         </script>
