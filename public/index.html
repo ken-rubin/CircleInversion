@@ -117,9 +117,9 @@
 	            }
 
                 // Cycle the colors...slowly.
-	            float fR = sin(/*2.0 * 3.14159 */ time * colorfactors.x);
-	            float fG = cos(/*2.0 * 3.14159 */ time * colorfactors.y);
-	            float fB = sin(/*2.0 * 3.14159 */ time * colorfactors.z);
+	            float fR = sin(time * colorfactors.x);
+	            float fG = cos(time * colorfactors.y);
+	            float fB = sin(time * colorfactors.z);
 
                 // Normalize to get into full color space.
 	            vec3 vBaseColor = normalize(vec3(fR / 2.2 + 0.4,
@@ -131,7 +131,7 @@
 	            vec3 vColor = vBaseColor * fPosLength;// * fPosLength;
 
                 // Soften up the color slightly.
-	            vColor = 1.0 - exp2(-vColor);
+	            //vColor = 1.0 - exp2(-vColor);
 
                 // Finally, output with full opacity.
 	            gl_FragColor = vec4(vColor,
