@@ -100,7 +100,7 @@
                     atan(time * cycleoffset.y));
 
                 // Iterate the fractal.
-                for (int i = 0; i < 16; i++)
+                for (int i = 0; i < 20; i++)
 	            {
                     // This abs call is critical to getting the kaleidoscope effect.
 		            vPos.x = abs(vPos.x);
@@ -117,14 +117,14 @@
 	            }
 
                 // Cycle the colors...slowly.
-	            float fR = sin(2.0 * 3.14159 * time * colorfactors.x);
-	            float fG = cos(2.0 * 3.14159 * time * colorfactors.y);
-	            float fB = sin(2.0 * 3.14159 * time * colorfactors.z);
+	            float fR = sin(/*2.0 * 3.14159 */ time * colorfactors.x);
+	            float fG = cos(/*2.0 * 3.14159 */ time * colorfactors.y);
+	            float fB = sin(/*2.0 * 3.14159 */ time * colorfactors.z);
 
                 // Normalize to get into full color space.
-	            vec3 vBaseColor = normalize(vec3(fR / 2.0 + 0.5,
-                    fG / 2.0 + 0.5,
-                    fB / 2.0 + 0.5));
+	            vec3 vBaseColor = normalize(vec3(fR / 2.2 + 0.4,
+                    fG / 2.2 + 0.4,
+                    fB / 2.2 + 0.4));
 
                 // Position length is critical to differentiating the intensity of the shape.
                 float fPosLength = length(vPos);
