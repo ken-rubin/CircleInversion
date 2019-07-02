@@ -100,7 +100,7 @@
                     atan(time * cycleoffset.y));
 
                 // Iterate the fractal.
-                for (int i = 0; i < 20; i++)
+                for (int i = 0; i < 10; i++)
 	            {
                     // This abs call is critical to getting the kaleidoscope effect.
 		            vPos.x = abs(vPos.x);
@@ -113,13 +113,13 @@
 		            vPos = CircleInversion(vPos,
                         vec2(0.5,
                             0.5),             // The center.
-                        reflectionradius);                 // Magic number.  Too small -> mush.  Too big -> mush.  Just right -> awesome!
+                        reflectionradius);    // Magic number.  Too small -> mush.  Too big -> mush.  Just right -> awesome!
 	            }
 
                 // Cycle the colors...slowly.
-	            float fR = sin(time * colorfactors.x);
-	            float fG = cos(time * colorfactors.y);
-	            float fB = sin(time * colorfactors.z);
+	            float fR = sin(time / 2.0 * colorfactors.x);
+	            float fG = cos(time / 2.0  * colorfactors.y);
+	            float fB = sin(time / 2.0  * colorfactors.z);
 
                 // Normalize to get into full color space.
 	            vec3 vBaseColor = normalize(vec3(fR / 2.2 + 0.4,
@@ -131,7 +131,7 @@
 	            vec3 vColor = vBaseColor * fPosLength;// * fPosLength;
 
                 // Soften up the color slightly.
-	            //vColor = 1.0 - exp2(-vColor);
+	            vColor = 1.0 - exp2(-vColor);
 
                 // Finally, output with full opacity.
 	            gl_FragColor = vec4(vColor,
@@ -176,7 +176,7 @@
                         WIDTH / HEIGHT,
                         0.1,
                         20000);
-                    camera.position.set(0, 1, 0);
+                    camera.position.set(0, 0.85, 0);
                     scene.add(camera);
 
                     // Create an event listener that resizes the renderer with the browser window.
