@@ -100,7 +100,7 @@
                     atan(time * cycleoffset.y));
 
                 // Iterate the fractal.
-                for (int i = 0; i < 32; i++)
+                for (int i = 0; i < 256; i++)
 	            {
                     // This abs call is critical to getting the kaleidoscope effect.
 		            vPos.x = abs(vPos.x);
@@ -117,18 +117,18 @@
 	            }
 
                 // Cycle the colors...slowly.
-	            float fR = sin(time / 2.0 * colorfactors.x);
-	            float fG = cos(time / 2.0  * colorfactors.y);
-	            float fB = sin(time / 2.0  * colorfactors.z);
+	            float fR = sin(time * colorfactors.x);
+	            float fG = cos(time * colorfactors.y);
+	            float fB = sin(time * colorfactors.z);
 
                 // Normalize to get into full color space.
-	            vec3 vBaseColor = normalize(vec3(fR / 2.2 + 0.4,
-                    fG / 2.2 + 0.4,
-                    fB / 2.2 + 0.4));
+	            vec3 vBaseColor = normalize(vec3(fR / 2.0 + 0.5,
+                    fG / 2.0 + 0.5,
+                    fB / 2.0 + 0.5));
 
                 // Position length is critical to differentiating the intensity of the shape.
                 float fPosLength = length(vPos);
-	            vec3 vColor = vBaseColor * fPosLength;// * fPosLength;
+	            vec3 vColor = vBaseColor * fPosLength * fPosLength;
 
                 // Soften up the color slightly.
 	            vColor = 1.0 - exp2(-vColor);
@@ -227,26 +227,26 @@
                         scale: {
 
                             type: "v2",
-                            value: new THREE.Vector2(1.25,
-                                1.25)
+                            value: new THREE.Vector2(1.125,
+                                1.125)
                         },
                         cycleoffset: {
 
                             type: "v2",
-                            value: new THREE.Vector2(0.00123,
+                            value: new THREE.Vector2(0.000123,
                                 0.00567)
                         },
                         reflectionradius: {
 
                             type: "f",
-                            value: 0.99
+                            value: 0.9
                         },
                         colorfactors: {
 
                             type: "v3",
-                            value: new THREE.Vector3(0.05,
-                                0.03,
-                                0.07)
+                            value: new THREE.Vector3(0.7,
+                                0.3,
+                                1.0)
                         }
                     };
 
@@ -280,7 +280,7 @@
                     // If uniforms allocated, update time.
                     if (uniforms !== null) {
 
-                        uniforms.time.value = (new Date().getTime() - startTime) / 100;
+                        uniforms.time.value = (new Date().getTime() - startTime) / 5000;
                     }
 
                     // Render the scene.
@@ -295,5 +295,7 @@
         </script>
     </head>
     <body style="margin: 0; overflow: hidden;">
+        <iframe src="/L.mp3" allow="autoplay" id="audio" style="display:none"></iframe>
+        <audio autoplay loop id="play" src="466.2.mp3" type="audio/mpeg"></audio>
     </body>
 </html>
