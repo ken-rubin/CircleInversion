@@ -1,0 +1,90 @@
+/////////////////////////////
+// Application entry point. 
+//
+
+// Indicates that user control is enabled.
+const ENABLE_CONTROL = true;
+
+// Ready method invoked when the document is fully loaded.
+document.addEventListener("DOMContentLoaded", () => {
+
+    ///////////////////////////
+    // Allocate the vertex and pixel shader instances.
+    const vs = new VertexShader_Orthographic();
+    const ps = new PixelShader_SpiralOfMadness();
+    //const ps = new PixelShader_CircleInversion();
+
+    ///////////////////////////
+    // Create the scene.
+    let scene = new THREE.Scene();
+
+    // Create a renderer, set its side & add it to the DOM.
+    let renderer = new THREE.WebGLRenderer({
+
+        antialias: true
+    });
+    renderer.setSize(window.innerWidth,
+        window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    // Create a camera, zoom it out from the model a bit, and add it to the scene.
+    let camera = new THREE.PerspectiveCamera(60,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        20000);
+    camera.position.set(0, 0.85, 0);
+    scene.add(camera);
+
+    // Create an event listener that resizes the renderer with the browser window.
+    window.addEventListener("resize", () => {
+
+        // Update the renderer and the camera.
+        renderer.setSize(window.innerWidth,
+            window.innerHeight);
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+    });
+
+    // Define simple plane geometry upon which to display the fractal.
+    var geometry = new THREE.PlaneGeometry(3,
+        1,
+        1,
+        1);
+
+    // Create the shader material.
+    var shaderMaterial = new THREE.ShaderMaterial({
+
+        uniforms: ps.uniforms,
+        vertexShader: vs.content,
+        fragmentShader: ps.content
+    });
+
+    // Allocate the mesh which is added to the scene.
+    var mesh = new THREE.Mesh(geometry,
+        shaderMaterial);
+    mesh.rotateX(-Math.PI / 2);
+    scene.add(mesh);
+
+    // Add OrbitControls to pan around with the mouse.
+    let controls = new THREE.OrbitControls(camera,
+        renderer.domElement);
+    controls.enabled = ENABLE_CONTROL;
+
+    // Renders the scene and updates the render as needed.
+    const animate = () => {
+
+        // Update uniforms before rendering.
+        ps.updateUniforms();
+
+        // Render the scene.
+        renderer.render(scene,
+            camera);
+        controls.update();
+
+        // Schedule next frame.
+        requestAnimationFrame(animate);
+    };
+
+    // Start the update process.
+    animate();
+});
