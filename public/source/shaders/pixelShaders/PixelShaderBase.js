@@ -12,6 +12,16 @@ class PixelShaderBase extends ShaderBase {
         this.startTime = new Date().getTime();
     }
 
+    updateUniforms() {
+
+        // Do nothing in base.
+    }
+
+    get uniforms() {
+
+        throw new Error("?Must overload get _uniforms!");
+    }
+
     get _innerContent() {
 
         // Build up uniform string.
@@ -29,16 +39,6 @@ class PixelShaderBase extends ShaderBase {
 
             ${this._main}
         `;
-    }
-
-    updateUniforms() {
-
-        // Do nothing in base.
-    }
-
-    get uniforms() {
-
-        throw new Error("?Must overload get _uniforms!");
     }
 
     get _subRoutines() {

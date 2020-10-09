@@ -17,15 +17,15 @@ document.addEventListener("DOMContentLoaded", () => {
         shaderName = urlParams.get("shader");
     }
     shaderName = "PixelShader_" + shaderName;
-    let speedFactor = 128;
+    let speedFactor = 65536;
     if (urlParams.has("speed")) {
 
         speedFactor = parseInt(urlParams.get("speed"));
         if (speedFactor < 32 ||
-            speedFactor > 16384 ||
+            speedFactor > 130072 ||
             isNaN(speedFactor)) {
 
-            speedFactor = 128;
+            speedFactor = 65536;
         }
     }
 
@@ -99,6 +99,7 @@ document.addEventListener("DOMContentLoaded", () => {
         renderer.domElement);
     controls.enabled = ENABLE_CONTROL;
 
+    ///////////////////////////////
     // Renders the scene and updates the render as needed.
     const animate = () => {
 
