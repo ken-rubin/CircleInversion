@@ -5,16 +5,16 @@
 class PixelShader_SpiralOfMadness extends PixelShaderBase {
 
     // Initialize class hierarchy.
-    constructor() {
+    constructor(speedFactor) {
 
-        super();
+        super(speedFactor);
     }
 
     updateUniforms() {
 
         this.uniforms.resolution.value = new THREE.Vector2(window.innerWidth,
             window.innerHeight);
-        this.uniforms.time.value = (new Date().getTime() - this.startTime) / 256;
+        this.uniforms.time.value = (new Date().getTime() - this.startTime) / this.speedFactor;
     }
 
     get uniforms() {

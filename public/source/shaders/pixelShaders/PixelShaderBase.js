@@ -4,10 +4,11 @@
 
 class PixelShaderBase extends ShaderBase {
 
-    constructor() {
+    constructor(speedFactor) {
 
         super();
 
+        this.speedFactor = speedFactor;
         this.startTime = new Date().getTime();
     }
 

@@ -8,11 +8,40 @@ const ENABLE_CONTROL = true;
 // Ready method invoked when the document is fully loaded.
 document.addEventListener("DOMContentLoaded", () => {
 
+    // Grab the query string parameters indicating 
+    // what shader to run and how fast it lives.
+    let urlParams = new URLSearchParams(window.location.search);
+    let shaderName = "CircleInversion";
+    if (urlParams.has("shader")) {
+
+        shaderName = urlParams.get("shader");
+    }
+    shaderName = "PixelShader_" + shaderName;
+    let speedFactor = 128;
+    if (urlParams.has("speed")) {
+
+        speedFactor = parseInt(urlParams.get("speed"));
+        if (speedFactor < 32 ||
+            speedFactor > 16384 ||
+            isNaN(speedFactor)) {
+
+            speedFactor = 128;
+        }
+    }
+
     ///////////////////////////
     // Allocate the vertex and pixel shader instances.
     const vs = new VertexShader_Orthographic();
-    const ps = new PixelShader_SpiralOfMadness();
-    //const ps = new PixelShader_CircleInversion();
+    let ps = null;
+    
+    try {
+        
+        ps = eval(`new ${shaderName}(${speedFactor})`);
+    } catch {
+
+        // Don't fail, just default.
+        ps = new PixelShader_CircleInversion(speedFactor);
+    }
 
     ///////////////////////////
     // Create the scene.
