@@ -12,13 +12,9 @@ class PixelShader_CircleInversion extends PixelShaderBase {
 
     updateUniforms() {
 
-        this.uniforms.cycleoffset.value = new THREE.Vector2(0.5 + 0.1 * Math.sin((new Date().getTime() - this.startTime) / 10000),//0.1,
-                        0.5 + 0.1 * Math.cos((new Date().getTime() - this.startTime) / 10000));//0.1)
-        this.uniforms.aspectstretch.value = new THREE.Vector2(0.25 + 0.75 * Math.sin((new Date().getTime() - this.startTime) / 10000),//0.1,
-                        0.25 + 0.75 * Math.cos((new Date().getTime() - this.startTime) / 10000));//0.1)
         this.uniforms.resolution.value = new THREE.Vector2(window.innerWidth,
             window.innerHeight);
-        this.uniforms.time.value = (new Date().getTime() - this.startTime) / this.speedFactor;
+        this.uniforms.time.value = ((new Date().getTime() - this.startTime) / this.speedFactor);
     }
 
     get uniforms() {
@@ -51,8 +47,8 @@ class PixelShader_CircleInversion extends PixelShaderBase {
 
                     type: "v2",
                     shaderType: "vec2",
-                    value: new THREE.Vector2(1,//0.125,
-                        1)//0.125)
+                    value: new THREE.Vector2(1,
+                        1)
                 },
                 cycleoffset: {
 
@@ -65,7 +61,7 @@ class PixelShader_CircleInversion extends PixelShaderBase {
 
                     type: "f",
                     shaderType: "float",
-                    value: 1
+                    value: 0.5
                 },
                 colorfactors: {
 

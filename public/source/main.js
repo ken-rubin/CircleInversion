@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
         shaderName = urlParams.get("shader");
     }
     shaderName = "PixelShader_" + shaderName;
-    let speedFactor = 65536;
+    let speedFactor = 64;
     if (urlParams.has("speed")) {
 
         speedFactor = parseInt(urlParams.get("speed"));
