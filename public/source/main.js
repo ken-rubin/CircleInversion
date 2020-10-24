@@ -11,13 +11,13 @@ document.addEventListener("DOMContentLoaded", () => {
     // Grab the query string parameters indicating 
     // what shader to run and how fast it lives.
     let urlParams = new URLSearchParams(window.location.search);
-    let shaderName = "CircleInversion";
+    let shaderName = "Mandelbrot";
     if (urlParams.has("shader")) {
 
         shaderName = urlParams.get("shader");
     }
     shaderName = "PixelShader_" + shaderName;
-    let speedFactor = 64;
+    let speedFactor = 256.0;
     if (urlParams.has("speed")) {
 
         speedFactor = parseInt(urlParams.get("speed"));
@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
         window.innerWidth / window.innerHeight,
         0.1,
         20000);
-    camera.position.set(0, 0.85, 0);
+    camera.position.set(0, 0.2, 0);
     scene.add(camera);
 
     // Create an event listener that resizes the renderer with the browser window.
@@ -75,7 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Define simple plane geometry upon which to display the fractal.
-    var geometry = new THREE.PlaneGeometry(3,
+    var geometry = new THREE.PlaneGeometry(1,
         1,
         1,
         1);
