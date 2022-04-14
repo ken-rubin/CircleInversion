@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Grab the query string parameters indicating 
     // what shader to run and how fast it lives.
     let urlParams = new URLSearchParams(window.location.search);
-    let shaderName = "Mandelbrot";
+    let shaderName = "CircleInversion";
     if (urlParams.has("shader")) {
 
         shaderName = urlParams.get("shader");

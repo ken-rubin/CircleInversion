@@ -27,7 +27,7 @@ class PixelShader_CircleInversion extends PixelShaderBase {
 
                     type: "f",
                     shaderType: "float",
-                    value: 0
+                    value: 0.1
                 },
                 resolution: {
 
@@ -54,22 +54,22 @@ class PixelShader_CircleInversion extends PixelShaderBase {
 
                     type: "v2",
                     shaderType: "vec2",
-                    value: new THREE.Vector2(0.000123,
-                        0.00567)
+                    value: new THREE.Vector2(0.010123,
+                        0.100567)
                 },
                 reflectionradius: {
 
                     type: "f",
                     shaderType: "float",
-                    value: 0.5
+                    value: 0.75
                 },
                 colorfactors: {
 
                     type: "v3",
                     shaderType: "vec3",
-                    value: new THREE.Vector3(0.7,
-                        0.3,
-                        1.0)
+                    value: new THREE.Vector3(0.73,
+                        0.37,
+                        0.83)
                 }
             };
         }
